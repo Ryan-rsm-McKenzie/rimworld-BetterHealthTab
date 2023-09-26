@@ -91,6 +91,7 @@
     <Compile Include="CLIK\CSS.cs" />
     <Compile Include="CLIK\WeakReference.cs" />
     <Compile Include="ColorHSV.cs" />
+    <Compile Include="Compatibility\AutoExtractGenes.cs" />
     <Compile Include="Compatibility\EBFramework.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="HealthTab\Hediffs\Bars\Bar.cs" />

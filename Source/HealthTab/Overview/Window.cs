@@ -65,6 +65,7 @@ namespace BetterHealthTab.HealthTab.Overview
 					Pawns.MedicalCare.Create(pawn),
 					Pawns.Pain.Create(pawn),
 					Pawns.Capacities.Create(pawn),
+					Compatibility.AutoExtractGenes.Create(pawn),
 				} : Iter.Empty<UIComponent?>();
 			this._entries.Fill(range.FilterMap(x => x));
 		}
