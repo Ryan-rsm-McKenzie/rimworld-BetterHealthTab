@@ -9,7 +9,7 @@ using Verse;
 namespace Compatibility
 {
 	[StaticConstructorOnStartup]
-	internal sealed class EBFramework
+	internal static class EBFramework
 	{
 		private static readonly GetMaxHealth_t? s_getMaxHealth = null;
 
