@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using CLIK;
 using CLIK.Components;
 using CLIK.Extensions;
 using CLIK.Painting;
@@ -87,8 +86,7 @@ namespace BetterHealthTab.HealthTab.Operations
 				SoundDefOf.Tick_Low.PlayOneShotOnCamera();
 				this
 					.GetAncestorByType<Tab.Component>()?
-					.GetDescendantByType<Window>()?
-					.InvalidateCache();
+					.InvalidateBills();
 			}
 		}
 

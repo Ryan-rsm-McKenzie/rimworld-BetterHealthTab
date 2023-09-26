@@ -8,6 +8,17 @@ using Verse;
 
 namespace BetterHealthTab
 {
+	[HarmonyPatch(typeof(Corpse))]
+	[HarmonyPatch("Notify_BillDeleted")]
+	[HarmonyPatch(new Type[] { typeof(Bill) })]
+	internal class Corpse_Notify_BillDeleted
+	{
+		public static void Postfix(Corpse __instance)
+		{
+			HealthTab.Tab.Instance!.InvalidateBills(__instance);
+		}
+	}
+
 	[HarmonyPatch(typeof(DefGenerator))]
 	[HarmonyPatch("GenerateImpliedDefs_PreResolve")]
 	[HarmonyPatch(new Type[] { })]
@@ -45,6 +56,17 @@ namespace BetterHealthTab
 		public static void Postfix(Pawn_HealthTracker __instance)
 		{
 			HealthTab.Tab.Instance!.InvalidateHediffs(__instance.pawn);
+		}
+	}
+
+	[HarmonyPatch(typeof(Pawn))]
+	[HarmonyPatch("Notify_BillDeleted")]
+	[HarmonyPatch(new Type[] { typeof(Bill) })]
+	internal class Pawn_Notify_BillDeleted
+	{
+		public static void Postfix(Pawn __instance)
+		{
+			HealthTab.Tab.Instance!.InvalidateBills(__instance);
 		}
 	}
 }

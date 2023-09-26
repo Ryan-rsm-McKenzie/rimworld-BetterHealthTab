@@ -39,26 +39,24 @@ namespace BetterHealthTab.HealthTab
 
 		public void Close() => this.CloseTab();
 
-		public void DockWindow(bool visible)
+		public void InvalidateBills(Thing? other)
 		{
-			Utils.Assert(this._open);
-			var size = s_initialSize;
-			size.Width += visible ? Operations.Docker.ExtraWidth : 0;
-			this.size = (Vector2)size;
-			this._impl!.DockWindow(visible);
+			if (this._open && this.SelThing == other) {
+				this._impl!.InvalidateBills();
+			}
 		}
 
-		public bool HasDockedWindow()
+		public void InvalidateHediffs(Pawn? other)
 		{
-			Utils.Assert(this._open);
-			return this._impl!.HasDockedWindow();
-		}
-
-		public void InvalidateHediffs(Pawn pawn)
-		{
-			if (this._open && this.SelThing?.PawnForHealth() == pawn) {
+			if (this._open && this.SelThing?.PawnForHealth() == other) {
 				this._impl!.InvalidateHediffs();
 			}
+		}
+
+		public bool IsOperationsVisible()
+		{
+			Utils.Assert(this._open);
+			return this._impl!.IsOperationsVisible();
 		}
 
 		public override void OnOpen()
@@ -66,6 +64,15 @@ namespace BetterHealthTab.HealthTab
 			this.size = (Vector2)s_initialSize;
 			this._impl = new();
 			this._open = true;
+		}
+
+		public void ShowOperations(bool visible)
+		{
+			Utils.Assert(this._open);
+			var size = s_initialSize;
+			size.Width += visible ? Operations.Docker.ExtraWidth : 0;
+			this.size = (Vector2)size;
+			this._impl!.ShowOperations(visible);
 		}
 
 		protected override void CloseTab()
@@ -111,17 +118,24 @@ namespace BetterHealthTab.HealthTab
 		{
 			private static int s_savedIndex = 0;
 
-			private readonly IWindow _docked;
+			private readonly Operations.Window _bills;
+
+			private readonly Hediffs.Window _hediffs;
 
 			private readonly Nav _nav;
 
-			private readonly IWindow _right;
+			private readonly Operations.Docker _operations;
+
+			private readonly Overview.Window _overview;
 
 			private Thing? _thingForMedBills = null;
 
 			public Component()
 			{
 				this.InvalidateCache();
+
+				this._overview = new();
+				this._bills = new();
 
 				this._nav = new Nav() {
 					Parent = this,
@@ -130,8 +144,8 @@ namespace BetterHealthTab.HealthTab
 						Anchor = TextAnchor.MiddleCenter,
 					},
 				};
-				this._right = new Hediffs.Window() { Parent = this };
-				this._docked = new Operations.Docker() {
+				this._hediffs = new Hediffs.Window() { Parent = this };
+				this._operations = new Operations.Docker() {
 					Parent = this,
 					Visible = false,
 				};
@@ -147,45 +161,37 @@ namespace BetterHealthTab.HealthTab
 				}
 			}
 
-			public void DockWindow(bool visible)
-			{
-				this.InvalidateSize();
-				this.QueueAction(() => this._docked.Visible = visible);
-			}
-
-			public bool HasDockedWindow() => this._docked.Visible;
-
 			public override double HeightFor(double width) => throw new NotImplementedException();
 
-			public void InvalidateHediffs() => this._right.InvalidateCache();
+			public void InvalidateBills() => this._bills.InvalidateCache();
+
+			public void InvalidateHediffs() => this._hediffs.InvalidateCache();
+
+			public bool IsOperationsVisible() => this._operations.Visible;
+
+			public void ShowOperations(bool visible)
+			{
+				this.InvalidateSize();
+				this.QueueAction(() => this._operations.Visible = visible);
+			}
 
 			public override double WidthFor(double height) => throw new NotImplementedException();
 
 			protected override void RecacheNow()
 			{
-				int wanted = this.ShouldAllowOperations() ? 2 : 1;
-				if (this._nav.Count != wanted) {
-					IEnumerable<INavTarget> targets = Iter.Once(new Overview.Window());
-					if (wanted == 2) {
-						var pawn = this.ThingForMedBills!.PawnForHealth();
-						targets = targets.Chain(
-							Iter.Once(new Operations.Window() {
-								Label = pawn!.RaceProps.IsMechanoid ?
-									"MedicalOperationsMechanoidsShort".Translate() :
-									"MedicalOperationsShort".Translate(),
-							}));
-					}
-
-					this._nav.Fill(targets);
+				var tabs = new List<INavTarget>() { this._overview };
+				if (this.ShouldAllowOperations()) {
+					tabs.Add(this._bills);
 				}
 
+				this._nav.Fill(tabs);
 				s_savedIndex = CLIK.Math.Clamp(s_savedIndex, 0, this._nav.Count - 1);
 				this._nav.CurrentIndex = s_savedIndex;
 
 				var thing = this._thingForMedBills;
 				var selected = (thing, thing?.PawnForHealth());
-				this._right.SelectedThings = selected;
-				this._docked.SelectedThings = selected;
+				this._hediffs.SelectedThings = selected;
+				this._operations.SelectedThings = selected;
 				this._nav.Tabs
 					.Cast<IWindow>()
 					.ForEach(x => x.SelectedThings = selected);
@@ -193,8 +199,8 @@ namespace BetterHealthTab.HealthTab
 
 			protected override void RepaintNow(Painter painter)
 			{
-				if (this._docked.Visible) {
-					var border = this._right.Geometry.GetRight(1);
+				if (this._operations.Visible) {
+					var border = this._hediffs.Geometry.GetRight(1);
 					using var _ = new Context.Palette(painter, new() { Color = Widgets.WindowBGBorderColor });
 					painter.FillRect(border);
 				}
@@ -203,11 +209,11 @@ namespace BetterHealthTab.HealthTab
 			protected override void ResizeNow()
 			{
 				var rect = this.Rect;
-				if (this._docked.Visible) {
-					this._docked.Geometry = rect.CutRight(Operations.Docker.ExtraWidth);
+				if (this._operations.Visible) {
+					this._operations.Geometry = rect.CutRight(Operations.Docker.ExtraWidth);
 				}
 
-				this._right.Geometry = rect.CutRight(rect.Width * 5.0 / 8.0);
+				this._hediffs.Geometry = rect.CutRight(rect.Width * 5.0 / 8.0);
 				this._nav.Geometry = rect;
 			}
 

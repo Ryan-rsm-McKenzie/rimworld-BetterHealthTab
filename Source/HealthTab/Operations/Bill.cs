@@ -98,11 +98,7 @@ namespace BetterHealthTab.HealthTab.Operations
 					Sounds = true,
 					Tooltip = new("DeleteBillTip".Translate()),
 				},
-				OnPress = () => {
-					var stack = this._bill.billStack;
-					stack.Delete(this._bill);
-					this.GetAncestorByType<Window>()!.InvalidateCache();
-				},
+				OnPress = () => this._bill.billStack.Delete(this._bill),
 				Sound = SoundDefOf.Click,
 				Texture = TexButton.DeleteX,
 			};

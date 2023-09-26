@@ -39,7 +39,7 @@ namespace BetterHealthTab.HealthTab.Operations
 				Mouseover = new() {
 					Sounds = true,
 				},
-				OnPress = () => Tab.Instance!.DockWindow(false),
+				OnPress = () => Tab.Instance!.ShowOperations(false),
 				Texture = TexButton.CloseXSmall,
 			};
 			this._list = new() {

@@ -40,11 +40,11 @@ namespace BetterHealthTab.HealthTab.Operations
 				Text = "AddBill".Translate(),
 				OnPress = () => {
 					var tab = Tab.Instance!;
-					if (tab.HasDockedWindow()) {
-						tab.DockWindow(false);
+					if (tab.IsOperationsVisible()) {
+						tab.ShowOperations(false);
 						SoundDefOf.TabClose.PlayOneShotOnCamera();
 					} else {
-						tab.DockWindow(true);
+						tab.ShowOperations(true);
 						SoundDefOf.TabOpen.PlayOneShotOnCamera();
 					}
 				},
@@ -140,8 +140,8 @@ namespace BetterHealthTab.HealthTab.Operations
 		protected override void VisibilityNow()
 		{
 			var tab = Tab.Instance!;
-			if (!this.Visible && tab.HasDockedWindow()) {
-				tab.DockWindow(false);
+			if (!this.Visible && tab.IsOperationsVisible()) {
+				tab.ShowOperations(false);
 			}
 		}
 
