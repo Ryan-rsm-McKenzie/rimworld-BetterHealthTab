@@ -9,7 +9,7 @@ using Verse;
 
 namespace BetterHealthTab.HealthTab.Hediffs.Bars
 {
-  [HotSwappable]
+	[HotSwappable]
 	internal sealed class PartDamage : BasicBar
 	{
 		private readonly double _progress;
