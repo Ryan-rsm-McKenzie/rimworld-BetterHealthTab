@@ -24,7 +24,7 @@ namespace BetterHealthTab.HealthTab
 
 		private static Size s_initialSize = new(630 + 100, 430);
 
-		private readonly Component _impl = new();
+		private Component? _impl = null;
 
 		private bool _open = false;
 
@@ -42,24 +42,28 @@ namespace BetterHealthTab.HealthTab
 		public void InvalidateBills(Thing? other)
 		{
 			if (this._open && this.SelThing == other) {
-				this._impl.InvalidateBills();
+				this._impl!.InvalidateBills();
 			}
 		}
 
 		public void InvalidateHediffs(Pawn? other)
 		{
 			if (this._open && this.SelThing?.PawnForHealth() == other) {
-				this._impl.InvalidateHediffs();
+				this._impl!.InvalidateHediffs();
 			}
 		}
 
 		public bool IsOperationsVisible()
 		{
 			Utils.Assert(this._open);
-			return this._impl.IsOperationsVisible();
+			return this._impl!.IsOperationsVisible();
 		}
 
-		public override void OnOpen() => this._open = true;
+		public override void OnOpen()
+		{
+			this._open = true;
+			this._impl ??= new();
+		}
 
 		public void ShowOperations(bool visible)
 		{
@@ -67,7 +71,7 @@ namespace BetterHealthTab.HealthTab
 			var size = s_initialSize;
 			size.Width += visible ? Operations.Docker.ExtraWidth : 0;
 			this.size = (Vector2)size;
-			this._impl.ShowOperations(visible);
+			this._impl!.ShowOperations(visible);
 		}
 
 		protected override void CloseTab()
@@ -101,7 +105,7 @@ namespace BetterHealthTab.HealthTab
 		protected override void FillTab()
 		{
 			if (this._open) {
-				this._impl.ThingForMedBills = this.SelThing;
+				this._impl!.ThingForMedBills = this.SelThing;
 				this._impl.Size = (Size)this.size;
 				App.Drive(this._impl);
 			}
