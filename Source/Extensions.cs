@@ -1,7 +1,9 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using CLIK.Extensions;
 using Compatibility;
@@ -11,7 +13,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace BetterHealthTab
+namespace Extensions
 {
 	[HotSwappable]
 	internal static class Extensions
@@ -34,6 +36,12 @@ namespace BetterHealthTab
 				.Map(x => x.BleedRate)
 				.Reduce((l, r) => l + r) ?? 0;
 			return rate * factor / pawn.HealthScale;
+		}
+
+		public static T CreateDelegate<T>(this MethodInfo self)
+			where T : Delegate
+		{
+			return (T)self.CreateDelegate(typeof(T));
 		}
 
 		public static void Deconstruct<T1, T2>(this Pair<T1, T2> self, out T1 t1, out T2 t2)

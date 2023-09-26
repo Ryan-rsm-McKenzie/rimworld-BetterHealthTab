@@ -2,6 +2,7 @@
 
 using System;
 using CLIK.Extensions;
+using Extensions;
 using HarmonyLib;
 using Iterator;
 using Verse;
@@ -26,7 +27,7 @@ namespace Compatibility
 						type,
 						"GetMaxHealth",
 						new Type[] { typeof(BodyPartDef), typeof(Pawn), typeof(BodyPartRecord) });
-				s_getMaxHealth = (GetMaxHealth_t?)method?.CreateDelegate(typeof(GetMaxHealth_t));
+				s_getMaxHealth = method?.CreateDelegate<GetMaxHealth_t>();
 			}
 		}
 

@@ -7,6 +7,7 @@ using System.Linq;
 using CLIK.Components;
 using CLIK.Extensions;
 using CLIK.Painting;
+using Extensions;
 using HotSwap;
 using Iterator;
 using RimWorld;

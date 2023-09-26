@@ -5,6 +5,7 @@ using System.Linq;
 using CLIK;
 using CLIK.Components;
 using CLIK.Painting;
+using Extensions;
 using HotSwap;
 using Iterator;
 using RimWorld;
