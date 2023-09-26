@@ -23,6 +23,8 @@ namespace BetterHealthTab.HealthTab.Hediffs
 
 		private readonly Bars.Bar? _bar;
 
+		private readonly Background _bg;
+
 		private readonly List<Hediff> _hediffs;
 
 		private readonly Stack _icons;
@@ -30,8 +32,6 @@ namespace BetterHealthTab.HealthTab.Hediffs
 		private readonly Label _label;
 
 		private int _stage;
-
-		private Rect _tipRegion = Rect.Zero;
 
 		public Row(IEnumerable<Hediff> hediffs)
 		{
@@ -62,14 +62,12 @@ namespace BetterHealthTab.HealthTab.Hediffs
 
 			this._label = new() {
 				Parent = this,
-				Mouseover = new() {
-					Highlight = Color.white,
-					Sounds = true,
-				},
 				TextStyle = new() {
 					Color = bar?.Primary ?? this._hediffs[0].LabelColor,
 				},
 			};
+
+			this._bg = new Background() { Parent = this };
 		}
 
 		private int Stage {
@@ -88,8 +86,12 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			}
 		}
 
-		public override double HeightFor(double width) =>
-			Text.LineHeight + Padding + (this._bar?.HeightFor(width) ?? 0);
+		public override double HeightFor(double width)
+		{
+			var rect = new Rect(0, 0, width, 1000);
+			var size = this.ResizeNowImpl(rect, true);
+			return rect.Height - size.Height;
+		}
 
 		public override double WidthFor(double height) => throw new NotImplementedException();
 
@@ -117,34 +119,19 @@ namespace BetterHealthTab.HealthTab.Hediffs
 		{
 			this.Stage = this._hediffs[0].CurStageIndex;
 
-			if (Utils.MouseIsOver(this._tipRegion)) {
-				Utils.TooltipRegion(this._tipRegion, new(this.Tooltip, Tab.StableTooltipID), 1);
+			var region = this._label.Geometry;
+			if (Utils.MouseIsOver(region)) {
+				Utils.TooltipRegion(region, new(this.Tooltip, Tab.StableTooltipID), 1);
 				if (this._hediffs.Count > 1) {
 					Utils.TooltipRegion(
-						this._tipRegion,
+						region,
 						new(this._hediffs.Count == 2 ? "..." : $"... x{this._hediffs.Count - 1}", Tab.StableTooltipID + 1),
 						0);
 				}
 			}
 		}
 
-		protected override void ResizeNow()
-		{
-			var rect = this.Rect;
-			if (this._bar is not null) {
-				double bar = this._bar.HeightFor(rect.Width);
-				this._bar.Geometry = rect.CutTop(bar);
-			}
-
-			rect = rect.Contract(Padding / 2);
-			this._label.Geometry = rect;
-			var icons = rect.CutRight(this._icons.WidthFor(rect.Height * 0.90));
-			this._tipRegion = rect;
-			this._icons.Geometry = icons with {
-				Height = rect.Height * 0.90,
-				Center = icons.Center,
-			};
-		}
+		protected override void ResizeNow() => this.ResizeNowImpl(this.Rect, false);
 
 		private void RecacheIcons()
 		{
@@ -209,6 +196,52 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			}
 
 			this._icons.Fill(icons);
+		}
+
+		private Size ResizeNowImpl(Rect rect, bool test)
+		{
+			if (this._bar is not null) {
+				var bar = rect.CutTop(this._bar.HeightFor(rect.Width));
+				if (!test) {
+					this._bar.Geometry = bar;
+				}
+			}
+
+			rect = rect.Contract(Padding / 2);
+			if (!test) {
+				this._bg.Geometry = rect;
+			}
+
+			double iconsHeight = Text.LineHeight * 0.90;
+			var icons = rect.CutRight(this._icons.WidthFor(iconsHeight));
+			if (!test) {
+				this._label.Geometry = rect;
+				this._icons.Geometry = icons with {
+					Height = iconsHeight,
+					Center = icons.Center,
+				};
+			} else {
+				rect.CutTop(this._label.HeightFor(rect.Width));
+			}
+
+			return rect.Size;
+		}
+
+		[HotSwappable]
+		private sealed class Background : UIComponent
+		{
+			public override double HeightFor(double width) => throw new NotImplementedException();
+
+			public override double WidthFor(double height) => throw new NotImplementedException();
+
+			protected override void RepaintNow(Painter painter)
+			{
+				if (this.Focused) {
+					var rect = this.Rect;
+					painter.DrawHighlight(rect);
+					painter.PlayMouseoverSounds(rect);
+				}
+			}
 		}
 	}
 }
