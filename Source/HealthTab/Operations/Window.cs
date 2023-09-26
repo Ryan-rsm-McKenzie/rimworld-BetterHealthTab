@@ -95,9 +95,14 @@ namespace BetterHealthTab.HealthTab.Operations
 				if (dirty) {
 					this.InvalidateCache();
 					this._bills.ScrollTo(0);
+					if (this.MyParent?.CurrentIndex != this.Index) {
+						this.RecacheLabel();
+					}
 				}
 			}
 		}
+
+		private Nav? MyParent => (Nav?)this.Parent;
 
 		public override double HeightFor(double width) => throw new NotImplementedException();
 
@@ -105,24 +110,17 @@ namespace BetterHealthTab.HealthTab.Operations
 
 		protected override void RecacheNow()
 		{
-			string label = this._pawn!.RaceProps.IsMechanoid ?
-				"MedicalOperationsMechanoidsShort".Translate() :
-				"MedicalOperationsShort".Translate();
 			if (this._pawn is not null && this._billGiver is not null) {
 				var range = this._billGiver
 					.BillStack
 					.Bills
 					.Map(x => new Bill(x) as IListItem);
 				this._bills.Fill(range);
-				int count = this._bills.Count;
-				if (count > 0) {
-					label += $" ({count})";
-				}
 			} else {
 				this._bills.Clear();
 			}
 
-			this.Label = label;
+			this.RecacheLabel();
 		}
 
 		protected override void RepaintNow(Painter painter) { }
@@ -145,6 +143,19 @@ namespace BetterHealthTab.HealthTab.Operations
 			if (!this.Visible && tab.HasDockedWindow()) {
 				tab.DockWindow(false);
 			}
+		}
+
+		private void RecacheLabel()
+		{
+			string label = (this._pawn?.RaceProps.IsMechanoid ?? false) ?
+				"MedicalOperationsMechanoidsShort".Translate() :
+				"MedicalOperationsShort".Translate();
+			int count = this._billGiver?.BillStack.Count ?? 0;
+			if (count > 0) {
+				label += $" ({count})";
+			}
+
+			this.Label = label;
 		}
 	}
 }
