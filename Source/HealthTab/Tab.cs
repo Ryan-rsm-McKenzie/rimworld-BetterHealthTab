@@ -24,7 +24,7 @@ namespace BetterHealthTab.HealthTab
 
 		private static Size s_initialSize = new(630 + 100, 430);
 
-		private Component? _impl = null;
+		private readonly Component _impl = new();
 
 		private bool _open = false;
 
@@ -42,29 +42,24 @@ namespace BetterHealthTab.HealthTab
 		public void InvalidateBills(Thing? other)
 		{
 			if (this._open && this.SelThing == other) {
-				this._impl!.InvalidateBills();
+				this._impl.InvalidateBills();
 			}
 		}
 
 		public void InvalidateHediffs(Pawn? other)
 		{
 			if (this._open && this.SelThing?.PawnForHealth() == other) {
-				this._impl!.InvalidateHediffs();
+				this._impl.InvalidateHediffs();
 			}
 		}
 
 		public bool IsOperationsVisible()
 		{
 			Utils.Assert(this._open);
-			return this._impl!.IsOperationsVisible();
+			return this._impl.IsOperationsVisible();
 		}
 
-		public override void OnOpen()
-		{
-			this.size = (Vector2)s_initialSize;
-			this._impl = new();
-			this._open = true;
-		}
+		public override void OnOpen() => this._open = true;
 
 		public void ShowOperations(bool visible)
 		{
@@ -72,13 +67,12 @@ namespace BetterHealthTab.HealthTab
 			var size = s_initialSize;
 			size.Width += visible ? Operations.Docker.ExtraWidth : 0;
 			this.size = (Vector2)size;
-			this._impl!.ShowOperations(visible);
+			this._impl.ShowOperations(visible);
 		}
 
 		protected override void CloseTab()
 		{
 			this._open = false;
-			this._impl = null;
 			base.CloseTab();
 		}
 
@@ -107,8 +101,8 @@ namespace BetterHealthTab.HealthTab
 		protected override void FillTab()
 		{
 			if (this._open) {
-				this._impl!.ThingForMedBills = this.SelThing;
-				this._impl!.Size = (Size)this.size;
+				this._impl.ThingForMedBills = this.SelThing;
+				this._impl.Size = (Size)this.size;
 				App.Drive(this._impl);
 			}
 		}
@@ -116,8 +110,6 @@ namespace BetterHealthTab.HealthTab
 		[HotSwappable]
 		public sealed class Component : UIComponent
 		{
-			private static int s_savedIndex = 0;
-
 			private readonly Operations.Window _bills;
 
 			private readonly Hediffs.Window _hediffs;
@@ -139,7 +131,6 @@ namespace BetterHealthTab.HealthTab
 
 				this._nav = new Nav() {
 					Parent = this,
-					OnCurrentChanged = (int index) => s_savedIndex = index,
 					TextStyle = new() {
 						Anchor = TextAnchor.MiddleCenter,
 					},
@@ -179,14 +170,15 @@ namespace BetterHealthTab.HealthTab
 
 			protected override void RecacheNow()
 			{
-				var tabs = new List<INavTarget>() { this._overview };
-				if (this.ShouldAllowOperations()) {
-					tabs.Add(this._bills);
-				}
+				int wanted = this.ShouldAllowOperations() ? 2 : 1;
+				if (wanted != this._nav.Count) {
+					var tabs = new List<INavTarget>() { this._overview };
+					if (wanted == 2) {
+						tabs.Add(this._bills);
+					}
 
-				this._nav.Fill(tabs);
-				s_savedIndex = CLIK.Math.Clamp(s_savedIndex, 0, this._nav.Count - 1);
-				this._nav.CurrentIndex = s_savedIndex;
+					this._nav.Fill(tabs);
+				}
 
 				var thing = this._thingForMedBills;
 				var selected = (thing, thing?.PawnForHealth());

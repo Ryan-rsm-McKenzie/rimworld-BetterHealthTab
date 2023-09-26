@@ -63,8 +63,6 @@ namespace CLIK.Components
 
 		public Color Highlight { get; set; } = ColorLibrary.Yellow;
 
-		public Action<int>? OnCurrentChanged { get; set; } = null;
-
 		public IEnumerable<INavTarget> Tabs => this._tabs.Map(x => x.Target);
 
 		public CSS.TextStyle TextStyle {
@@ -284,8 +282,6 @@ namespace CLIK.Components
 				this._tabs[old].Target.Visible = false;
 			if (0 <= this._index && this._index < this._tabs.Count)
 				this._tabs[this._index].Target.Visible = true;
-
-			this.OnCurrentChanged?.Invoke(this._index);
 		}
 
 		[HotSwappable]
