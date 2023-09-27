@@ -2,14 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CLIK;
 using CLIK.Components;
-using CLIK.Extensions;
 using CLIK.Painting;
 using HotSwap;
 using Iterator;
-using RimWorld;
 using UnityEngine;
 using Verse;
 using Context = CLIK.Context;
@@ -25,58 +22,25 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 
 		public static Bar? Create(IEnumerable<Hediff> hediffs)
 		{
-			var comps = hediffs
+			return hediffs
 				.FilterMap(x => (x as HediffWithComps)?.comps)
 				.Flatten()
-				.ToList();
-
-			var immunizable = comps
-				.FilterMap(x => x as HediffComp_Immunizable)
+				.FilterMap(x => {
+					Bar? result = x switch {
+						HediffComp_Chargeable chargeable => new Chargeable(chargeable),
+						HediffComp_Disappears disappears => new Disappears(disappears),
+						HediffComp_Immunizable immunizable => new Immunizable(immunizable),
+						HediffComp_Pollution pollution => Severity.Create(pollution),
+						HediffComp_RandomizeSeverityPhases phases => Severity.Create(phases),
+						HediffComp_SelfHeal heal => Severity.Create(heal),
+						HediffComp_SeverityFromGas gas => Severity.Create(gas),
+						HediffComp_SeverityFromHemogen hemogen => Severity.Create(hemogen),
+						HediffComp_SeverityModifierBase modifier => Severity.Create(modifier),
+						_ => null,
+					};
+					return result;
+				})
 				.Nth(0);
-			if (immunizable is not null) {
-				return new Immunizable(immunizable);
-			}
-
-			var disappears = comps
-				.FilterMap(x => x as HediffComp_Disappears)
-				.Nth(0);
-			if (disappears is not null) {
-				return new Disappears(disappears);
-			}
-
-			var chargeable = comps
-					.FilterMap(x => x as HediffComp_Chargeable)
-					.Nth(0);
-			if (chargeable is not null) {
-				return new Chargeable(chargeable);
-			}
-
-			var modifiers = comps
-				.FilterMap(x => x as HediffComp_SeverityModifierBase)
-				.Filter(x => x is not HediffComp_TendDuration)
-				.Filter(x => !x.parent.IsPermanent())
-				.Map(x => x.parent)
-				.Chain(hediffs.Filter(x =>
-					x.GetType() == typeof(Hediff) &&
-					x.def.initialSeverity > 0 &&
-					(x.def.maxSeverity < double.MaxValue || x.def.lethalSeverity > 0)))
-				.Nth(0);
-			if (modifiers is not null) {
-				double max =
-					modifiers.def.maxSeverity < float.MaxValue ? modifiers.def.maxSeverity :
-					modifiers.def.lethalSeverity > 0 ? modifiers.def.lethalSeverity :
-					1.00;
-				return new Severity(modifiers, max, false);
-			}
-
-			var high = hediffs
-				.FilterMap(x => x as Hediff_High)
-				.Nth(0);
-			if (high is not null) {
-				return new Severity(high, 1.00, false);
-			}
-
-			return null;
 		}
 
 		public sealed override double HeightFor(double width) => 4;
