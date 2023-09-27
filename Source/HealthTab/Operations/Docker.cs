@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using CLIK.Components;
 using CLIK.Extensions;
@@ -26,6 +27,8 @@ namespace BetterHealthTab.HealthTab.Operations
 
 		private readonly SearchBar _search;
 
+		private readonly Stopwatch _watch = new();
+
 		private Pawn? _pawn = null;
 
 		private Thing? _thing = null;
@@ -34,6 +37,7 @@ namespace BetterHealthTab.HealthTab.Operations
 		{
 			this.InvalidateCache();
 
+			this._watch.Start();
 			this._close = new() {
 				Parent = this,
 				Mouseover = new() {
@@ -92,6 +96,7 @@ namespace BetterHealthTab.HealthTab.Operations
 
 		protected override void RecacheNow()
 		{
+			this._watch.Restart();
 			this._operations.Clear();
 
 			if (this._pawn is not null && this._thing is not null) {
@@ -123,7 +128,12 @@ namespace BetterHealthTab.HealthTab.Operations
 			this.ApplySearchFilter();
 		}
 
-		protected override void RepaintNow(Painter painter) { }
+		protected override void RepaintNow(Painter painter)
+		{
+			if (this._watch.Elapsed.TotalSeconds >= 5) {
+				this.InvalidateCache();
+			}
+		}
 
 		protected override void ResizeNow()
 		{
