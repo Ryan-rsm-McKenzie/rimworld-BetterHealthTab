@@ -5,7 +5,7 @@ using Verse;
 
 namespace BetterHealthTab.HealthTab.Hediffs.Bars
 {
-  [HotSwappable]
+	[HotSwappable]
 	internal sealed class Chargeable : BasicBar
 	{
 		private readonly HediffComp_Chargeable _comp;

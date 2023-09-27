@@ -8,7 +8,7 @@ using Context = CLIK.Context;
 
 namespace BetterHealthTab.HealthTab.Hediffs.Bars
 {
-  [HotSwappable]
+	[HotSwappable]
 	internal sealed class Immunizable : Bar
 	{
 		private readonly HediffComp_Immunizable _comp;
