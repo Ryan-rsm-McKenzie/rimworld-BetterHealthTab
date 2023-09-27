@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System;
 using CLIK.Extensions;
 
 namespace CLIK.Painting
