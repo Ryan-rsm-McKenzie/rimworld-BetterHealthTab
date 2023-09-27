@@ -128,6 +128,8 @@ namespace BetterHealthTab.HealthTab.Hediffs
 
 		public override double HeightFor(double width) => throw new NotImplementedException();
 
+		public void OnOpen() => this.InvalidateCache();
+
 		public override double WidthFor(double height) => throw new NotImplementedException();
 
 		protected override void InputNow(Painter painter)

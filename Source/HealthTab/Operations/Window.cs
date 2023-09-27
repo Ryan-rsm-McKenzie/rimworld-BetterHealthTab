@@ -95,16 +95,22 @@ namespace BetterHealthTab.HealthTab.Operations
 				if (dirty) {
 					this.InvalidateCache();
 					this._bills.ScrollTo(0);
-					if (this.MyParent?.CurrentIndex != this.Index) {
+					if (!this.IsActiveTab()) {
 						this.RecacheLabel();
 					}
 				}
 			}
 		}
 
-		private Nav? MyParent => (Nav?)this.Parent;
-
 		public override double HeightFor(double width) => throw new NotImplementedException();
+
+		public void OnOpen()
+		{
+			this.InvalidateCache();
+			if (!this.IsActiveTab()) {
+				this.RecacheLabel();
+			}
+		}
 
 		public override double WidthFor(double height) => throw new NotImplementedException();
 
@@ -143,6 +149,12 @@ namespace BetterHealthTab.HealthTab.Operations
 			if (!this.Visible && tab.IsOperationsVisible()) {
 				tab.ShowOperations(false);
 			}
+		}
+
+		private bool IsActiveTab()
+		{
+			var parent = (Nav?)this.Parent;
+			return parent is not null && parent.CurrentIndex == this.Index;
 		}
 
 		private void RecacheLabel()

@@ -86,6 +86,8 @@ namespace BetterHealthTab.HealthTab.Operations
 
 		public override double HeightFor(double width) => throw new NotImplementedException();
 
+		public void OnOpen() => this.InvalidateCache();
+
 		public override double WidthFor(double height) => ExtraWidth;
 
 		protected override void RecacheNow()

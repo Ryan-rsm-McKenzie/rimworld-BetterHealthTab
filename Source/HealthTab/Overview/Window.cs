@@ -52,6 +52,8 @@ namespace BetterHealthTab.HealthTab.Overview
 
 		public override double HeightFor(double width) => this._entries.HeightFor(width);
 
+		public void OnOpen() => this.InvalidateCache();
+
 		public override double WidthFor(double height) => this._entries.WidthFor(height);
 
 		protected override void RecacheNow()

@@ -64,6 +64,7 @@ namespace BetterHealthTab.HealthTab
 		{
 			this._open = true;
 			this._impl ??= new();
+			this._impl.OnOpen();
 		}
 
 		public void ShowOperations(bool visible)
@@ -165,6 +166,14 @@ namespace BetterHealthTab.HealthTab
 
 			public bool IsOperationsVisible() => this._operations.Visible;
 
+			public void OnOpen()
+			{
+				this._overview.OnOpen();
+				this._bills.OnOpen();
+				this._hediffs.OnOpen();
+				this._operations.OnOpen();
+			}
+
 			public void ShowOperations(bool visible)
 			{
 				this.InvalidateSize();
@@ -192,6 +201,8 @@ namespace BetterHealthTab.HealthTab
 				this._nav.Tabs
 					.Cast<IWindow>()
 					.ForEach(x => x.SelectedThings = selected);
+
+				this.InvalidateSize();
 			}
 
 			protected override void RepaintNow(Painter painter)
