@@ -23,24 +23,28 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 		public static Bar? Create(IEnumerable<Hediff> hediffs)
 		{
 			return hediffs
-				.FilterMap(x => (x as HediffWithComps)?.comps)
-				.Flatten()
-				.FilterMap(x => {
-					Bar? result = x switch {
-						HediffComp_Chargeable chargeable => new Chargeable(chargeable),
-						HediffComp_Disappears disappears => new Disappears(disappears),
-						HediffComp_Immunizable immunizable => new Immunizable(immunizable),
-						HediffComp_Pollution pollution => Severity.Create(pollution),
-						HediffComp_RandomizeSeverityPhases phases => Severity.Create(phases),
-						HediffComp_SelfHeal heal => Severity.Create(heal),
-						HediffComp_SeverityFromGas gas => Severity.Create(gas),
-						HediffComp_SeverityFromHemogen hemogen => Severity.Create(hemogen),
-						HediffComp_SeverityModifierBase modifier => Severity.Create(modifier),
-						_ => null,
-					};
-					return result;
+				.FilterMap(x => x as HediffWithComps)
+				.Map(x => {
+					return x.comps
+						.FilterMap(x => {
+							Bar? result = x switch {
+								HediffComp_Chargeable chargeable => new Chargeable(chargeable),
+								HediffComp_Disappears disappears => new Disappears(disappears),
+								HediffComp_Immunizable immunizable => new Immunizable(immunizable),
+								HediffComp_Pollution pollution => Severity.Create(pollution),
+								HediffComp_RandomizeSeverityPhases phases => Severity.Create(phases),
+								HediffComp_SelfHeal heal => Severity.Create(heal),
+								HediffComp_SeverityFromGas gas => Severity.Create(gas),
+								HediffComp_SeverityFromHemogen hemogen => Severity.Create(hemogen),
+								HediffComp_SeverityModifierBase modifier => Severity.Create(modifier),
+								_ => null,
+							};
+							return result;
+						})
+						.Chain(Iter.Once(Compatibility.UltratechAlteredCarbon.Create(x)));
 				})
-				.Nth(0);
+				.Flatten()
+				.Find(x => x is not null);
 		}
 
 		public sealed override double HeightFor(double width) => 4;
