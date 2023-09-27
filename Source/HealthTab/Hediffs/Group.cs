@@ -151,7 +151,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 								.Chain(labelParts.GetRange(0, index).Intersperse(" "))
 								.Chain(Iter.Once("</color> "))
 								.Chain(Iter.Once($"<color={added!.LabelColor.ToHexString()}>"))
-								.Chain(addedParts.Take(addedParts.Count - 1))
+								.Chain(addedParts.Take(addedParts.Count - 1).Intersperse(" "))
 								.Chain(Iter.Once("</color> "))
 								.Chain(Iter.Once($"<color={colorHex}>"))
 								.Chain(labelParts.GetRange(index, labelParts.Count - index).Intersperse(" "))
