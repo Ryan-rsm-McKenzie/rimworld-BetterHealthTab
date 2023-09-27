@@ -139,8 +139,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 				HealthCardUtility.DoDebugOptions(debug.ToUnity(), this._pawn);
 			}
 
-			this.ShowDebugButton = ShouldShowDebugButton();
-			this.ShowAllHediffs = HealthCardUtility.showAllHediffs;
+			this.RecacheDebugStates();
 		}
 
 		protected override void RecacheNow()
@@ -176,6 +175,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			this._noHediffs.Visible = !any;
 
 			this.ApplySearchFilter();
+			this.RecacheDebugStates();
 			this.InvalidateSize();
 		}
 
@@ -244,6 +244,12 @@ namespace BetterHealthTab.HealthTab.Hediffs
 				.GroupBy(x => x.Part)
 				.Map(x => new Group(this._pawn!, x.Key, x));
 			this._list.Fill(range);
+		}
+
+		private void RecacheDebugStates()
+		{
+			this.ShowDebugButton = ShouldShowDebugButton();
+			this.ShowAllHediffs = HealthCardUtility.showAllHediffs;
 		}
 	}
 }
