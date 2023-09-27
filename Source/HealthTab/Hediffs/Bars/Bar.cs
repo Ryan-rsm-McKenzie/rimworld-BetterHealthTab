@@ -63,7 +63,7 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 				.Nth(0);
 			if (modifiers is not null) {
 				double max =
-					modifiers.def.maxSeverity < double.MaxValue ? modifiers.def.maxSeverity :
+					modifiers.def.maxSeverity < float.MaxValue ? modifiers.def.maxSeverity :
 					modifiers.def.lethalSeverity > 0 ? modifiers.def.lethalSeverity :
 					1.00;
 				return new Severity(modifiers, max, false);
