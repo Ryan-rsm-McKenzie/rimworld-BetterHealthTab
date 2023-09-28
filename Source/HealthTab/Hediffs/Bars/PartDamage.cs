@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using CLIK.Extensions;
 using Extensions;
 using HotSwap;
 using RimWorld;
@@ -30,7 +31,7 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 			}
 
 			double damage = hediffs.GetPartDamage();
-			double min = record.def.destroyableByDamage ? 0 : 1;
+			double min = record.def.destroyableByDamage || damage.IsInfinity() ? 0 : 1;
 			double max = record.GetMaxHealth(pawn);
 			double current = CLIK.Math.Clamp(max - damage, min, max);
 
