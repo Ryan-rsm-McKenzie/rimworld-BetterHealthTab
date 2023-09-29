@@ -241,13 +241,13 @@ namespace CLIK.Components
 			}
 
 			if (this.NeedsRecache) {
-				//Utils.DebugMessage($"Recaching {this.GetType().Name}...");
+				Utils.DebugMessage($"Recaching {this.GetType().Name}...");
 				this.RecacheNow();
 				this.NeedsRecache = false;
 			}
 
 			if (this.NeedsResize) {
-				//Utils.DebugMessage($"Resizing {this.GetType().Name}...");
+				Utils.DebugMessage($"Resizing {this.GetType().Name}...");
 				this.ResizeNow();
 				this.NeedsResize = false;
 			}
