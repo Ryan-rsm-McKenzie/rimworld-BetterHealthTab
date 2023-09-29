@@ -23,7 +23,7 @@ namespace BetterHealthTab.HealthTab
 
 		public static Tab? Instance = null;
 
-		private static Size s_initialSize = new(630 + 100, 430);
+		private static readonly Size s_initialSize = new(630 + 100, 430);
 
 		private Component? _impl = null;
 
