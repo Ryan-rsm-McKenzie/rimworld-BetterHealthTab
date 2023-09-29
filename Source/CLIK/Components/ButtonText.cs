@@ -75,21 +75,16 @@ namespace CLIK.Components
 
 		public override double HeightFor(double width)
 		{
-			var font = this.TextStyle.Font;
-			return font.HasValue ?
-				this._text.DisplayHeight(width, font.Value) :
-				this._text.DisplayHeight(width);
+			using var _ = new Context.GUIStyle(this.TextStyle);
+			return this.Text.DisplayHeight(width);
 		}
 
 		public void OnButtonDown() => this.OnPress?.Invoke();
 
 		public override double WidthFor(double height)
 		{
-			var font = this.TextStyle.Font;
-			double width = font.HasValue ?
-				this._text.DisplayWidth(font.Value) :
-				this._text.DisplayWidth();
-			return width + this._padding;
+			using var _ = new Context.GUIStyle(this.TextStyle);
+			return this.Text.DisplayWidth() + this.Padding;
 		}
 
 		protected override void InputNow(Painter painter)

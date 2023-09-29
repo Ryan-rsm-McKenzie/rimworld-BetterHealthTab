@@ -69,6 +69,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			};
 
 			this._bg = new Background() { Parent = this };
+			this.RecacheNow();
 		}
 
 		private int Stage {
@@ -100,20 +101,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 		{
 			this.InvalidateSize();
 			this.RecacheIcons();
-
-			var hediff = this._hediffs[0];
-			if (hediff is Hediff_MissingPart) {
-				this._label.Text = $"<i>{hediff.LabelCap}</i>";
-			} else {
-				int count = this._hediffs.Count;
-				int variations = this._hediffs
-					.Map(x => x.Label)
-					.Distinct()
-					.Count();
-				this._label.Text =
-					(variations == 1 && hediff.IsPermanent() ? hediff.LabelCap : hediff.LabelBaseCap) +
-					(count > 1 ? $" x{count}" : "");
-			}
+			this.RecacheLabel();
 		}
 
 		protected override void RepaintNow(Painter painter)
@@ -197,6 +185,23 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			}
 
 			this._icons.Fill(icons);
+		}
+
+		private void RecacheLabel()
+		{
+			var hediff = this._hediffs[0];
+			if (hediff is Hediff_MissingPart) {
+				this._label.Text = $"<i>{hediff.LabelCap}</i>";
+			} else {
+				int count = this._hediffs.Count;
+				int variations = this._hediffs
+					.Map(x => x.Label)
+					.Distinct()
+					.Count();
+				this._label.Text =
+					(variations == 1 && hediff.IsPermanent() ? hediff.LabelCap : hediff.LabelBaseCap) +
+					(count > 1 ? $" x{count}" : "");
+			}
 		}
 
 		private Size ResizeNowImpl(Rect rect, bool test)

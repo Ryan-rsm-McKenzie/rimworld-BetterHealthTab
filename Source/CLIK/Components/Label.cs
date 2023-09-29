@@ -22,18 +22,14 @@ namespace CLIK.Components
 
 		public override double HeightFor(double width)
 		{
-			var font = this.TextStyle.Font;
-			return font.HasValue ?
-				this.Text.DisplayHeight(width, font.Value) :
-				this.Text.DisplayHeight(width);
+			using var _ = new Context.GUIStyle(this.TextStyle);
+			return this.Text.DisplayHeight(width);
 		}
 
 		public override double WidthFor(double height)
 		{
-			var font = this.TextStyle.Font;
-			return font.HasValue ?
-				this.Text.DisplayWidth(font.Value) :
-				this.Text.DisplayWidth();
+			using var _ = new Context.GUIStyle(this.TextStyle);
+			return this.Text.DisplayWidth();
 		}
 
 		protected override void RepaintNow(Painter painter)

@@ -20,7 +20,13 @@ namespace CLIK.Extensions
 	{
 		public static double Ceiling(this double self) => System.Math.Ceiling(self);
 
+		public static double CeilingToNearestPixel(this double self) =>
+			(self * GUIUtility.pixelsPerPoint + 0.48).Ceiling() / GUIUtility.pixelsPerPoint;
+
 		public static double Floor(this double self) => System.Math.Floor(self);
+
+		public static double FloorToNearestPixel(this double self) =>
+			(self * GUIUtility.pixelsPerPoint + 0.48).Floor() / GUIUtility.pixelsPerPoint;
 
 		// https://github.com/dotnet/runtime/blob/867f5d483e340af033f2ba83d29b21bab0e3bcb3/src/libraries/System.Private.CoreLib/src/System/Double.cs#L155
 		public static unsafe bool IsFinite(this double self)
@@ -98,28 +104,32 @@ namespace CLIK.Extensions
 	{
 		public static double DisplayHeight(this string self, double width)
 		{
-			var content = new GUIContent(self);
 			var style = Text.CurFontStyle;
-			return style.CalcHeight(content, (float)width.Floor());
-		}
+			int lines = 0;
+			float contentWidth = (float)width.FloorToNearestPixel();
 
-		public static double DisplayHeight(this string self, double width, GameFont font)
-		{
-			using var _ = new Context.GUIStyle(font: font);
-			return self.DisplayHeight(width);
+			self = self.StripTags();
+			while (!self.IsEmpty()) {
+				lines += 1;
+
+				int characters = Math.Clamp(style.GetNumCharactersThatFitWithinWidth(self, contentWidth), 0, self.Length);
+				if (characters == 0) {
+					break;
+				}
+
+				self = self.Substring(characters);
+			}
+
+			return lines > 0 ?
+				lines * Text.LineHeight + (lines - 1) * Text.SpaceBetweenLines :
+				0;
 		}
 
 		public static double DisplayWidth(this string self)
 		{
 			var content = new GUIContent(self);
 			var style = Text.CurFontStyle;
-			return System.Math.Ceiling(style.CalcSize(content).x);
-		}
-
-		public static double DisplayWidth(this string self, GameFont font)
-		{
-			using var _ = new Context.GUIStyle(font: font);
-			return self.DisplayWidth();
+			return ((double)style.CalcSize(content).x).CeilingToNearestPixel();
 		}
 	}
 

@@ -140,6 +140,8 @@
     <Publicize Include="Assembly-CSharp:RimWorld.Bill.BaseColor" />
     <Publicize Include="Assembly-CSharp:RimWorld.Recipe_RemoveBodyPart.SpawnPartsWhenRemoved" />
     <Publicize Include="UnityEngine.IMGUIModule:UnityEngine.GUI.DoTextField" />
+    <Publicize Include="UnityEngine.IMGUIModule:UnityEngine.GUIStyle.GetNumCharactersThatFitWithinWidth" />
+    <Publicize Include="UnityEngine.IMGUIModule:UnityEngine.GUIUtility.pixelsPerPoint" />
   </ItemGroup>
   <PropertyGroup>
     <PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
