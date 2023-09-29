@@ -108,6 +108,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 		}
 
 		private bool ShowAllHediffs {
+			get => this._showAllHediffs;
 			set {
 				if (this._showAllHediffs != value) {
 					this._showAllHediffs = value;
@@ -145,11 +146,12 @@ namespace BetterHealthTab.HealthTab.Hediffs
 		protected override void RecacheNow()
 		{
 			this._watch.Restart();
+			this.RecacheDebugStates();
 
 			var info = this._pawn?.RaceProps.body.BodyInfo();
 			var hediffs = this._pawn?.health?.hediffSet.hediffs ?? Iter.Empty<Hediff>();
 			var visible =
-				this._showAllHediffs ?
+				this.ShowAllHediffs ?
 				hediffs :
 				hediffs
 					.Filter(x => x is not Hediff_MissingPart && x.Visible)
@@ -175,7 +177,6 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			this._noHediffs.Visible = !any;
 
 			this.ApplySearchFilter();
-			this.RecacheDebugStates();
 			this.InvalidateSize();
 		}
 
@@ -189,6 +190,8 @@ namespace BetterHealthTab.HealthTab.Hediffs
 				var debug = new Rect(this._debugButtonAt, s_debugButtonSize);
 				HealthCardUtility.DoDebugOptions(debug.ToUnity(), this._pawn);
 			}
+
+			this.RecacheDebugStates();
 
 			if (!this._bleedRate.Null) {
 				double bleeding = this._bleedingHediffs.BleedRateTotal();
