@@ -196,7 +196,7 @@ namespace BetterHealthTab.HealthTab.Hediffs
 			if (!this._bleedRate.Null) {
 				double bleeding = this._bleedingHediffs.BleedRateTotal();
 				var pawn = this._pawn!;
-				int ticksToDie = this._bleedingHediffs.TicksUntilDeathDueToBloodLoss(bleeding) ?? int.MaxValue;
+				int ticksToDie = this._allHediffs.TicksUntilDeathDueToBloodLoss(bleeding) ?? int.MaxValue;
 				string danger =
 					ModsConfig.BiotechActive && (pawn.genes?.HasGene(GeneDefOf.Deathless) ?? false) ? "Deathless".Translate() :
 					ticksToDie < GenDate.TicksPerDay ?
