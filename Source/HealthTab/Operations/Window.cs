@@ -104,6 +104,14 @@ namespace BetterHealthTab.HealthTab.Operations
 
 		public override double HeightFor(double width) => throw new NotImplementedException();
 
+		public void InvalidateBills()
+		{
+			this.InvalidateCache();
+			if (!this.IsActiveTab()) {
+				this.RecacheLabel();
+			}
+		}
+
 		public void OnOpen()
 		{
 			this.InvalidateCache();

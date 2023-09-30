@@ -160,7 +160,7 @@ namespace BetterHealthTab.HealthTab
 
 			public override double HeightFor(double width) => throw new NotImplementedException();
 
-			public void InvalidateBills() => this._bills.InvalidateCache();
+			public void InvalidateBills() => this._bills.InvalidateBills();
 
 			public void InvalidateHediffs() => this._hediffs.InvalidateCache();
 
