@@ -84,7 +84,10 @@ namespace BetterHealthTab.HealthTab.Hediffs
 				Icons = new() {
 					Clear = null,
 				},
-				OnChanged = (_) => this.ApplySearchFilter(),
+				OnChanged = text => {
+					this.QueueAction(() => this._search!.Icons.Clear = text.IsEmpty() ? null : Widgets.CheckboxOffTex);
+					this.ApplySearchFilter();
+				},
 			};
 			this._noHediffs = new() {
 				Parent = this,

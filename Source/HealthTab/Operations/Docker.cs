@@ -63,7 +63,10 @@ namespace BetterHealthTab.HealthTab.Operations
 				Icons = new() {
 					Clear = null,
 				},
-				OnChanged = _ => this.ApplySearchFilter(),
+				OnChanged = text => {
+					this.QueueAction(() => this._search!.Icons.Clear = text.IsEmpty() ? null : Widgets.CheckboxOffTex);
+					this.ApplySearchFilter();
+				},
 			};
 		}
 

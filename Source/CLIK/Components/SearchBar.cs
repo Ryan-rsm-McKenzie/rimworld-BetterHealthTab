@@ -17,7 +17,7 @@ namespace CLIK.Components
 	{
 		private readonly ButtonTexture _clear;
 
-		private readonly CIcons _icons = new();
+		private readonly CIcons _icons;
 
 		private readonly Icon _search;
 
@@ -34,6 +34,7 @@ namespace CLIK.Components
 			this.HasPalette = true;
 			this.ListensForInput = true;
 
+			this._icons = new(this.InvalidateSize);
 			this._textStyle = new(this.InvalidateSize);
 
 			this._search = new() {
@@ -55,17 +56,7 @@ namespace CLIK.Components
 
 		public CIcons Icons {
 			get => this._icons;
-			set {
-				if (this._icons.Search != value.Search) {
-					this._icons.Search = value.Search;
-					this.InvalidateSize();
-				}
-
-				if (this._icons.Clear != value.Clear) {
-					this._icons.Clear = value.Clear;
-					this.InvalidateSize();
-				}
-			}
+			set => this._icons.Copy(value);
 		}
 
 		public bool NoMatches { get; set; } = false;
@@ -187,9 +178,41 @@ namespace CLIK.Components
 		[HotSwappable]
 		public sealed class CIcons
 		{
-			public Texture2D? Clear = TexButton.CloseXSmall;
+			private readonly Action? _onChanged = null;
 
-			public Texture2D? Search = TexButton.Search;
+			private Texture2D? _clear = TexButton.CloseXSmall;
+
+			private Texture2D? _search = TexButton.Search;
+
+			public CIcons(Action onChanged) => this._onChanged = onChanged;
+
+			public CIcons() { }
+
+			public Texture2D? Clear {
+				get => this._clear;
+				set {
+					if (this._clear != value) {
+						this._clear = value;
+						this._onChanged?.Invoke();
+					}
+				}
+			}
+
+			public Texture2D? Search {
+				get => this._search;
+				set {
+					if (this._search != value) {
+						this._search = value;
+						this._onChanged?.Invoke();
+					}
+				}
+			}
+
+			public void Copy(CIcons other)
+			{
+				this.Clear = other.Clear;
+				this.Search = other.Search;
+			}
 		}
 	}
 }
