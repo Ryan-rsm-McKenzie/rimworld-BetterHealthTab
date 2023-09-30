@@ -3,6 +3,7 @@
 using System;
 using System.Reflection;
 using BetterHealthTab.HealthTab.Hediffs.Bars;
+using Extensions;
 using HotSwap;
 using Iterator;
 using Verse;
@@ -14,20 +15,28 @@ namespace Compatibility
 	{
 		private static readonly Type? s_hediffStackDegradation = null;
 
+		private static readonly IsEmptySleeve_t? s_isEmptySleeve = null;
+
 		private static readonly FieldInfo? s_stackDegradation = null;
 
 		static UltratechAlteredCarbon()
 		{
 			if (ModsConfig.IsActive("hlx.UltratechAlteredCarbon")) {
-				s_hediffStackDegradation = AppDomain
+				var assembly = AppDomain
 					.CurrentDomain
 					.GetAssemblies()
 					.Filter(x => x.GetName().Name == "AlteredCarbon")
-					.Nth(0)?
-					.GetType("AlteredCarbon.Hediff_StackDegradation");
+					.Nth(0);
+				s_isEmptySleeve = assembly?
+					.GetType("AlteredCarbon.ACUtils")?
+					.GetMethod("IsEmptySleeve", new Type[] { typeof(Pawn) })?
+					.CreateDelegate<IsEmptySleeve_t>();
+				s_hediffStackDegradation = assembly?.GetType("AlteredCarbon.Hediff_StackDegradation");
 				s_stackDegradation = s_hediffStackDegradation?.GetField("stackDegradation");
 			}
 		}
+
+		private delegate bool IsEmptySleeve_t(Pawn pawn);
 
 		public static Bar? Create(HediffWithComps hediff)
 		{
@@ -35,6 +44,8 @@ namespace Compatibility
 				new Degradation(hediff) :
 				null;
 		}
+
+		public static bool ShouldAllowOperations(Pawn pawn) => s_isEmptySleeve?.Invoke(pawn) ?? false;
 
 		[HotSwappable]
 		private sealed class Degradation : BasicBar

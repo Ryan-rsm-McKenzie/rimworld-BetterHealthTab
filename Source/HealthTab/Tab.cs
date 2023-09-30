@@ -229,12 +229,16 @@ namespace BetterHealthTab.HealthTab
 			{
 				var thing = this.ThingForMedBills;
 				var pawn = thing?.PawnForHealth();
-				return
-					thing is not null &&
-					pawn is not null &&
-					!pawn.Dead &&
-					thing.def.AllRecipes.Any(x => x.AvailableNow && x.AvailableOnNow(pawn)) &&
-					pawn.OperableOn();
+				if (thing is not null && pawn is not null) {
+					bool ok =
+						!pawn.Dead &&
+						thing.def.AllRecipes.Any(x => x.AvailableNow && x.AvailableOnNow(pawn)) &&
+						pawn.OperableOn();
+					ok = ok || Compatibility.UltratechAlteredCarbon.ShouldAllowOperations(pawn);
+					return ok;
+				} else {
+					return false;
+				}
 			}
 		}
 	}
