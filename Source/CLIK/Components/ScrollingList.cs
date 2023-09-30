@@ -151,6 +151,11 @@ namespace CLIK.Components
 
 		protected override void ResizeNow()
 		{
+			if (this._dragging is not null) {
+				DragAndDrop.Stop();
+				this._dragging = null;
+			}
+
 			base.ResizeNow();
 			this.InvalidateVisibleRange();
 		}

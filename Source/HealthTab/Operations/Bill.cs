@@ -191,15 +191,17 @@ namespace BetterHealthTab.HealthTab.Operations
 
 		private void ValidateBillStack()
 		{
-			var range = this
-				.MyList!
-				.Data
-				.Cast<Bill>()
-				.OrderBy(x => x.Index)
-				.Map(x => x._bill);
-			var bills = this._bill.billStack.bills;
-			bills.Clear();
-			bills.AddRange(range);
+			var list = this.MyList;
+			if (list is not null) {
+				var range = list
+					.Data
+					.Cast<Bill>()
+					.OrderBy(x => x.Index)
+					.Map(x => x._bill);
+				var bills = this._bill.billStack.bills;
+				bills.Clear();
+				bills.AddRange(range);
+			}
 		}
 
 		[HotSwappable]
