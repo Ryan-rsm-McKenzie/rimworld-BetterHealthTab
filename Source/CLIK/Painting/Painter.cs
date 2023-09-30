@@ -113,11 +113,12 @@ namespace CLIK.Painting
 		public string TextField(Rect rect, string text, ref int? id)
 		{
 			var content = new GUIContent(text);
-			var position = rect.ToUnity();
-			id ??= GUIUtility.GetControlID(FocusType.Keyboard, position);
+			id ??= GUIUtility.GetControlID(
+				focus: FocusType.Keyboard,
+				position: rect.ToScreenSpace().ToUnity());
 
 			GUI.DoTextField(
-				position: position,
+				position: rect.ToUnity(),
 				id: id.Value,
 				content: content,
 				multiline: false,
