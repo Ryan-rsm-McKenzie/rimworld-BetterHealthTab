@@ -38,7 +38,7 @@ namespace Compatibility
 
 		private delegate bool IsEmptySleeve_t(Pawn pawn);
 
-		public static Bar? Create(HediffWithComps hediff)
+		public static Bar? Create(Hediff hediff)
 		{
 			return s_hediffStackDegradation is not null && hediff.GetType() == s_hediffStackDegradation ?
 				new Degradation(hediff) :
@@ -50,9 +50,9 @@ namespace Compatibility
 		[HotSwappable]
 		private sealed class Degradation : BasicBar
 		{
-			private readonly HediffWithComps _hediff;
+			private readonly Hediff _hediff;
 
-			public Degradation(HediffWithComps hediff)
+			public Degradation(Hediff hediff)
 			{
 				this.Primary = hediff.LabelColor;
 				this._hediff = hediff;

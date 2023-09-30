@@ -23,9 +23,7 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 			this._min = hediff.def.minSeverity;
 			this._max = max;
 			this._inverse = inverse;
-			this.Primary = this._hediff.def == HediffDefOf.BloodLoss ?
-				HealthUtility.RedColor :
-				this._hediff.LabelColor;
+			this.Primary = this._hediff.LabelColor;
 		}
 
 		protected override double Fill {
@@ -33,6 +31,14 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 				double value = CLIK.Math.InverseLerp(this._min, this._max, this._hediff.Severity);
 				return this._inverse ? 1 - value : value;
 			}
+		}
+
+		public static Severity? CreateSpecial(Hediff hediff)
+		{
+			return hediff.def == HediffDefOf.BloodLoss ?
+				new Severity(hediff, hediff.def.lethalSeverity, inverse: false) {
+					Primary = HealthUtility.RedColor,
+				} : null;
 		}
 
 		public static Severity? Create(HediffComp_SeverityModifierBase comp)

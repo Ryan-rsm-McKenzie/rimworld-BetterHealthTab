@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CLIK;
 using CLIK.Components;
 using CLIK.Painting;
@@ -22,29 +23,31 @@ namespace BetterHealthTab.HealthTab.Hediffs.Bars
 
 		public static Bar? Create(IEnumerable<Hediff> hediffs)
 		{
-			return hediffs
-				.FilterMap(x => x as HediffWithComps)
-				.Map(x => {
-					return x.comps
-						.FilterMap(x => {
-							Bar? result = x switch {
-								HediffComp_Chargeable chargeable => new Chargeable(chargeable),
-								HediffComp_Disappears disappears => new Disappears(disappears),
-								HediffComp_Immunizable immunizable => new Immunizable(immunizable),
-								HediffComp_Pollution pollution => Severity.Create(pollution),
-								HediffComp_RandomizeSeverityPhases phases => Severity.Create(phases),
-								HediffComp_SelfHeal heal => Severity.Create(heal),
-								HediffComp_SeverityFromGas gas => Severity.Create(gas),
-								HediffComp_SeverityFromHemogen hemogen => Severity.Create(hemogen),
-								HediffComp_SeverityModifierBase modifier => Severity.Create(modifier),
-								_ => null,
-							};
-							return result;
-						})
-						.Chain(Iter.Once(Compatibility.UltratechAlteredCarbon.Create(x)));
-				})
+			var (comps, other) = hediffs.Partition(x => x is HediffWithComps);
+			var bar = comps
+				.Cast<HediffWithComps>()
+				.Map(x => x.comps)
 				.Flatten()
-				.Find(x => x is not null);
+				.FilterMap(x => {
+					Bar? result = x switch {
+						HediffComp_Chargeable chargeable => new Chargeable(chargeable),
+						HediffComp_Disappears disappears => new Disappears(disappears),
+						HediffComp_Immunizable immunizable => new Immunizable(immunizable),
+						HediffComp_Pollution pollution => Severity.Create(pollution),
+						HediffComp_RandomizeSeverityPhases phases => Severity.Create(phases),
+						HediffComp_SelfHeal heal => Severity.Create(heal),
+						HediffComp_SeverityFromGas gas => Severity.Create(gas),
+						HediffComp_SeverityFromHemogen hemogen => Severity.Create(hemogen),
+						HediffComp_SeverityModifierBase modifier => Severity.Create(modifier),
+						_ => null,
+					};
+					return result;
+				})
+				.Nth(0);
+			bar ??= other
+				.FilterMap(x => Severity.CreateSpecial(x) ?? Compatibility.UltratechAlteredCarbon.Create(x))
+				.Nth(0);
+			return bar;
 		}
 
 		public sealed override double HeightFor(double width) => 4;
