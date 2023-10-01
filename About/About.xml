@@ -6,7 +6,7 @@
     <li>1.4</li>
   </supportedVersions>
   <packageId>Ryan.BetterHealthTab</packageId>
-  <description></description>
+  <description>A full replacement for the health tab</description>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>
