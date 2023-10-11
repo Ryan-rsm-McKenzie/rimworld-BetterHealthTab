@@ -38,18 +38,20 @@ namespace BetterHealthTab.HealthTab
 			Instance = this;
 		}
 
+		private Thing? SelectedThing => (Current.rootInt?.uiRoot as UIRoot_Play)?.mapUI!.selector!.SingleSelectedThing;
+
 		public void Close() => this.CloseTab();
 
 		public void InvalidateBills(Thing? other)
 		{
-			if (this._open && this.SelThing == other) {
+			if (this._open && this.SelectedThing == other) {
 				this._impl!.InvalidateBills();
 			}
 		}
 
 		public void InvalidateHediffs(Pawn? other)
 		{
-			if (this._open && this.SelThing?.PawnForHealth() == other) {
+			if (this._open && this.SelectedThing?.PawnForHealth() == other) {
 				this._impl!.InvalidateHediffs();
 			}
 		}
@@ -107,7 +109,7 @@ namespace BetterHealthTab.HealthTab
 		protected override void FillTab()
 		{
 			if (this._open) {
-				this._impl!.ThingForMedBills = this.SelThing;
+				this._impl!.ThingForMedBills = this.SelectedThing;
 				this._impl.Size = (Size)this.size;
 				App.Drive(this._impl);
 			}
