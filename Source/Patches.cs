@@ -28,9 +28,9 @@ namespace BetterHealthTab
 		{
 			foreach (var thing in DefDatabase<ThingDef>.AllDefs) {
 				if (thing.category == ThingCategory.Pawn) {
-					int pos = thing.inspectorTabs.FindIndex((tab) => tab == typeof(ITab_Pawn_Health));
+					int pos = thing.inspectorTabs?.FindIndex((tab) => tab == typeof(ITab_Pawn_Health)) ?? -1;
 					if (pos != -1) {
-						thing.inspectorTabs[pos] = typeof(HealthTab.Tab);
+						thing.inspectorTabs![pos] = typeof(HealthTab.Tab);
 					}
 				}
 			}
