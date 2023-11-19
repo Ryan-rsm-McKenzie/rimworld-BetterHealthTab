@@ -55,7 +55,7 @@ namespace CLIK.Painting
 
 		public void Label(Rect rect, string text)
 		{
-			var content = new GUIContent(text);
+			var content = GUIContent.Temp(text);
 			var style = Text.CurFontStyle;
 			style.Draw(
 				position: rect.ToUnity(),
@@ -117,7 +117,7 @@ namespace CLIK.Painting
 
 		public string TextField(Rect rect, string text, ref int? id)
 		{
-			var content = new GUIContent(text);
+			var content = GUIContent.Temp(text);
 			id ??= GUIUtility.GetControlID(
 				focus: FocusType.Keyboard,
 				position: rect.ToScreenSpace().ToUnity());

@@ -127,7 +127,7 @@ namespace CLIK.Extensions
 
 		public static double DisplayWidth(this string self)
 		{
-			var content = new GUIContent(self);
+			var content = GUIContent.Temp(self);
 			var style = Text.CurFontStyle;
 			return ((double)style.CalcSize(content).x).CeilingToNearestPixel();
 		}
