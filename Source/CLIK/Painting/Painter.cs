@@ -57,7 +57,12 @@ namespace CLIK.Painting
 		{
 			var content = new GUIContent(text);
 			var style = Text.CurFontStyle;
-			style.Draw(rect.ToUnity(), content, -1, false, false);
+			style.Draw(
+				position: rect.ToUnity(),
+				content: content,
+				controlID: -1,
+				on: false,
+				hover: false);
 		}
 
 		public void OutlineRect(Rect rect, double size)
