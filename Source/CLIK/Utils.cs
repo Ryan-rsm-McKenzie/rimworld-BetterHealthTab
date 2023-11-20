@@ -51,7 +51,7 @@ namespace CLIK
 			Assert(Event.current.IsRepaint(),
 				"Tooltips are only valid during repaint events!");
 			Assert(MouseIsOver(region),
-				"Tooltips are only valid is the mouse is over the given region!");
+				"Tooltips are only valid if the mouse is over the given region!");
 
 			if (Event.current.IsRepaint() && !SteamDeck.KeyboardShowing) {
 				if (DebugViewSettings.drawTooltipEdges) {
